@@ -41,7 +41,7 @@ window['requestAnimFrame'] = (function(){
           };
 })();
 
-Physijs.scripts.worker = 'physijs_worker.js';
+Physijs.scripts.worker = 'lib/physijs_worker.js';
 Physijs.scripts.cannon = 'cannon.js';
 
 var initScene, render, createShape,
@@ -56,7 +56,7 @@ initScene = function() {
 	renderer.shadowMapSoft = true;
     document.body.appendChild( renderer.domElement );
 	
-	scene = new Physijs.Scene;
+	scene = new Physijs.Scene({ reportsize: 5 });
 	scene.setGravity({ x: 0, y: -10, z: 0 });
 	
 	camera = new THREE.PerspectiveCamera(
@@ -95,6 +95,10 @@ initScene = function() {
 	requestAnimFrame( render );
 	
 	setInterval( createShape, 250 );
+
+	scene.onmessage = function (e) {
+		console.log(e);
+	};
 };
 
 render = function() {
@@ -103,7 +107,7 @@ render = function() {
 	scene.simulate();
 	renderer.render( scene, camera);
 	requestAnimFrame( render );
-	
+
 	stats.end();
 };
 
@@ -117,34 +121,36 @@ createShape = (function() {
 	return function() {
 		var shape, material = new THREE.MeshLambertMaterial({ opacity: 0, transparent: true });
 		
-		switch ( Math.floor(Math.random() * 1) ) {
+		switch ( Math.floor(Math.random() * 4) ) {
 			case 0:
 				shape = new Physijs.SphereMesh(
 					sphere_geometry,
 					material,
-					undefined,
-					{ restitution: Math.random() * 1.5 }
+					10.0
 				);
 				break;
 			
 			case 1:
 				shape = new Physijs.BoxMesh(
 					box_geometry,
-					material
+					material,
+					10.0
 				);
 				break;
 			
 			case 2:
 				shape = new Physijs.CylinderMesh(
 					cylinder_geometry,
-					material
+					material,
+					10.0
 				);
 				break;
 			
 			case 3:
 				shape = new Physijs.ConeMesh(
 					cone_geometry,
-					material
+					material,
+					10.0
 				);
 				break;
 			
@@ -169,7 +175,7 @@ createShape = (function() {
 			Math.random() * Math.PI,
 			Math.random() * Math.PI
 		);
-		
+
 		scene.add( shape );
 		
 		new TWEEN.Tween(shape.material).to({opacity: 1}, 500).start();
