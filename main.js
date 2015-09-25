@@ -56,7 +56,9 @@ initScene = function() {
 	renderer.shadowMapSoft = true;
     document.body.appendChild( renderer.domElement );
 	
-	scene = new Physijs.Scene({ reportsize: 5 });
+	//We have a limit of 200 bodies right now, until I figure out
+	//if performance is unaffected or how to get chunks working well
+	scene = new Physijs.Scene({ reportsize: 200 });
 	scene.setGravity({ x: 0, y: -10, z: 0 });
 	
 	camera = new THREE.PerspectiveCamera(
@@ -121,7 +123,9 @@ createShape = (function() {
 	return function() {
 		var shape, material = new THREE.MeshLambertMaterial({ opacity: 0, transparent: true });
 		
-		switch ( Math.floor(Math.random() * 4) ) {
+		//we set the max switch value to 1 because cylinder and cone shapes
+		//are not supported without ammo.js (well, collisions won't work)
+		switch ( Math.floor(Math.random() * 2) ) {
 			case 0:
 				shape = new Physijs.SphereMesh(
 					sphere_geometry,
